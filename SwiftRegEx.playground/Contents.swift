@@ -166,14 +166,5 @@ regEx = try Regex({
 regEx.match() // --> Should be true & 1 (It's just one match, because pattern does not look for repetitions)
 
 /// * (repetitions character): "The symbol * matches zero or more repetitions of the preceding matcher"
-
-// Example
-regEx = try Regex({
-    $0.pattern = "c.+t"
-    $0.input = "The fat cat sat on the mat."
-})
-
-regEx.match() // --> Should be true & 1 (It's just one match, because pattern does not look for repetitions)
-
 /// ? (repetitions character): "Meta character ? makes the preceding character optional"
 
