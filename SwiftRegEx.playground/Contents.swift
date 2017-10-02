@@ -4,6 +4,7 @@
  # A playground to learn regular expressions with Swift
  
  This playground follows the documentation on this repository: https://github.com/zeeshanu/learn-regex
+ See also this cheat sheet: https://www.cheatography.com/davechild/cheat-sheets/regular-expressions/pdf_bw/
  
  © 2017 Ogulcan Orhan - [Github](https://github.com/ogulcan)
  */
@@ -44,6 +45,7 @@ public class Regex: RegexProtocol {
     
     var input: String?
     var pattern: String?
+    var results: [String]?
     var options: NSRegularExpression.Options = .anchorsMatchLines
     var matchingOptions: NSRegularExpression.MatchingOptions = []
     
@@ -69,7 +71,12 @@ public class Regex: RegexProtocol {
                                                          options: matchingOptions,
                                                          range: self.getRange(of: input))
         
-        return (self.checkingResult!.count > 0)
+        if (self.checkingResult!.count > 0) {
+            self.setResult()
+            return true
+        } else {
+            return false
+        }
     }
     
     func match() -> (Bool, Int) {
@@ -77,7 +84,7 @@ public class Regex: RegexProtocol {
             print("Input should provided with builder")
             return (false, 0)
         }
-        
+
         return (self.matches(self.input!), self.checkingResult!.count)
     }
     
@@ -87,6 +94,12 @@ public class Regex: RegexProtocol {
     
     private func getRange(of text: String) -> NSRange {
         return NSMakeRange(0, text.count) // Swift 4 will let call just count
+    }
+    
+    private func setResult() {
+        self.results = self.checkingResult!.map {
+           return String(self.input![Range($0.range, in: self.input!)!])
+        }
     }
 }
 
@@ -365,3 +378,15 @@ regEx = try Regex({
  
  Let's find out some common problems
  */
+
+//: #### Find out html (only) tags
+
+regEx = try Regex({
+    $0.pattern = "<.*?>"
+    $0.input = "Hello this is <strong>John</strong> from <i>Londong, England</i>. Here is my e-mail address: <p>john@docket.com</p>."
+})
+
+regEx.match() // --> Should be true & 6
+regEx.results // --> Match: "<strong>,</strong>,<i>,</i>,<p>,</p>"
+
+let REGEX_HTML_TAGS = "<.*?>"
