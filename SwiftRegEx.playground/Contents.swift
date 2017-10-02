@@ -1,12 +1,22 @@
 //: Playground - noun: a place where people can play
 
-import UIKit
-
-
-/***
- *  Let's start with small one
+/*:
+ # A playground to learn regular expressions with Swift
+ 
+ This playground follows the documentation on this repository: https://github.com/zeeshanu/learn-regex
+ 
+ © 2017 Ogulcan Orhan - [Github](https://github.com/ogulcan)
  */
 
+//: ## Setup
+//: Import Foundation if you want to use to String and etc.
+import Foundation
+
+/*:
+ ## Let's start with small example
+ 
+ Just want to see how regular expression works with Swift
+ */
 let simplePattern = "run"
 let simpleInput = "run forest run"
 
@@ -16,12 +26,11 @@ let matches = regularExpression.matches(in: simpleInput, options: [], range: NSM
 matches.count // --> Should be 2
 
 
-/***
- *  # Wrapper
- *
- *  Some Swift stuff to handle crowd
+/*:
+ ## Wrapper
+ 
+ Swift stuff to handle those crowd
  */
-
 protocol RegexProtocol {
     var input: String? { get }
     var pattern: String? { get }
@@ -29,7 +38,7 @@ protocol RegexProtocol {
     var matchingOptions: NSRegularExpression.MatchingOptions { get }
 }
 
-class Regex: RegexProtocol {
+public class Regex: RegexProtocol {
     
     typealias regexBuild = (Regex) -> Void
     
@@ -81,7 +90,7 @@ class Regex: RegexProtocol {
     }
 }
 
-// Example
+//: ## Example
 var regEx = try Regex({
     $0.pattern = "run"
     $0.input = "run forest run"
@@ -98,16 +107,17 @@ regEx = try Regex({
 regEx.matches() // --> Should be true
 regEx.match().1 // --> Should be 1 (Because pattern is case sensitive as declared above by options)
 
-/***
- *  # Meta Characters
- *
- *  Note: All descriptions are from learn-regex repository that created by Zeeshan Ahmed
- *  https://github.com/zeeshanu/learn-regex
+
+/*:
+ ## Meta Characters
+ 
+ Note: All descriptions are from learn-regex repository that created by Zeeshan Ahmed
+ https://github.com/zeeshanu/learn-regex
  */
 
-/// . (period character): "Period matches any single character except a line break."
+//: . (period character): "Period matches any single character except a line break."
 
-// Example
+//: Example
 regEx = try Regex({
     $0.pattern = ".ies"
     $0.input = "All cities are filled with puppies"
@@ -115,8 +125,9 @@ regEx = try Regex({
 
 regEx.match().0 // --> Should be true
 regEx.match().1 // --> Should be 2
+//: Matches: "ties,pies"
 
-// Example
+//: Example
 regEx = try Regex({
     $0.pattern = "ies."
     $0.input = "All cities are filled with puppies"
@@ -124,10 +135,11 @@ regEx = try Regex({
 
 regEx.match().0 // --> Should be true
 regEx.match().1 // --> Should be 1 (Because . 'puppies' is not matched with any character that follows by 'ies')
+//: Matches: "ies "
 
-/// [] (character set): "Matches any character contained between the square brackets."
+//: [] (character set): "Matches any character contained between the square brackets."
 
-// Example
+//: Example
 regEx = try Regex({
     $0.pattern = "[Rr]un"
     $0.input = "Run forest run"
@@ -135,8 +147,9 @@ regEx = try Regex({
 
 regEx.match().0 // --> Should be true
 regEx.match().1 // --> Should be 2 (Now it matches with both cases)
+//: Matches: "Run,run"
 
-// Example
+//: Example
 regEx = try Regex({
     $0.pattern = "ies[.]"
     $0.input = "All cities are filled with puppies."
@@ -144,27 +157,211 @@ regEx = try Regex({
 
 regEx.match().0 // --> Should be true
 regEx.match().1 // --> Should be 1 (Because period character is inside bracket)
+//: Match: "ies."
 
-/// [^] (negated character set): "Matches any character that is not contained between the square brackets"
+//: [^] (negated character set): "Matches any character that is not contained between the square brackets"
 
-// Example
+//: Example
 regEx = try Regex({
     $0.pattern = "[^t]ies"
     $0.input = "All cities are filled with puppies."
 })
 
 regEx.match() // --> Should be true & 1
+//: Match: "pies"
 
-/// + (repetitions character): "The symbol + matches one or more repetitions of the preceding character"
+//: + (repetitions character, one or more): "The symbol + matches one or more repetitions of the preceding character"
 
-// Example
+//: Example
 regEx = try Regex({
     $0.pattern = "c.+t"
     $0.input = "The fat cat sat on the mat."
 })
 
-regEx.match() // --> Should be true & 1 (It's just one match, because pattern does not look for repetitions)
+regEx.match() // --> Should be true & 1 (It's just one match cause it also matches with whitespaces, too)
+//: Match: "cat sat on the mat"
 
-/// * (repetitions character): "The symbol * matches zero or more repetitions of the preceding matcher"
-/// ? (repetitions character): "Meta character ? makes the preceding character optional"
+//: * (repetitions character, zero or more): "The symbol * matches zero or more repetitions of the preceding matcher"
 
+//: Example
+regEx = try Regex({
+    $0.pattern = "\\s*[a-z]\\s*"
+    $0.input = "Run forest run."
+})
+
+regEx.match() // --> Should be true & 11 (Matches only with every lowercase letter)
+//: Matches: "u,n ,f,o,r,e,s,t ,r,u,n" --> Do not miss whitespaces
+
+//: ? (repetitions character): "Meta character ? makes the preceding character optional"
+
+//: Example
+regEx = try Regex({
+    $0.pattern = "[R]un"
+    $0.input = "Run forest run"
+})
+
+regEx.match() // --> Should be true & 1
+//: Matches: "Run"
+
+//: Example
+regEx = try Regex({
+    $0.pattern = "[R]?un"
+    $0.input = "Run forest run"
+})
+
+regEx.match() // --> Should be true & 2
+// Matches: "Run,un"
+
+
+/*:
+ ## Braces aka Quantifiers
+ 
+ Note: All descriptions are from learn-regex repository that created by Zeeshan Ahmed
+ https://github.com/zeeshanu/learn-regex
+ */
+
+
+//: {} (bracets): "Used to specify the number of times that a character or a group of characters can be repeated."
+
+//: Example
+regEx = try Regex({
+    $0.pattern = "[a-z]{4,}"
+    $0.input = "Run forest run"
+})
+
+regEx.match() // --> Should be true & 1
+// Matches: "forest"
+
+//: Example
+regEx = try Regex({
+    $0.pattern = "[a-z]{1,3}"
+    $0.input = "Run forest run"
+})
+
+regEx.match() // --> Should be true & 4
+// Matches: "un,for,est,run"
+
+//: Example
+regEx = try Regex({
+    $0.pattern = "[a-z]{3}"
+    $0.input = "Run forest run"
+})
+
+regEx.match() // --> Should be true & 3
+// Matches: "for,est,run"
+
+//: | (Alternations - Sub-patterns): "Used to define alternation. Alternation is like a condition between multiple expressions"
+
+//: Example
+regEx = try Regex({
+    $0.pattern = "(f|c|s|m).t"
+    $0.input = "The fat cat sat on the mat."
+})
+
+regEx.match() // --> Should be true & 4
+//: Match: "fat,cat,sat,mat"
+
+//: Example
+regEx = try Regex({
+    $0.pattern = "(f|c|s|m).*t"
+    $0.input = "The fat cat sat on the mat."
+})
+
+regEx.match() // --> Should be true & 1
+//: Match: "fat cat sat on the mat"
+
+//: Example
+regEx = try Regex({
+    $0.pattern = "(R|r)un"
+    $0.input = "Run forest run."
+})
+
+regEx.match() // --> Should be true & 2
+//: Match: "Run,run"
+
+//: Example
+regEx = try Regex({
+    $0.pattern = "(T|t)he|car"
+    $0.input = "The car is parked in the garage."
+})
+
+regEx.match() // --> Should be true & 3
+//: Match: "The,car,the"
+
+//: ^ (Caret): "used to check if matching character is the first character of the input string"
+
+//: Example
+regEx = try Regex({
+    $0.pattern = "^(T|t)he"
+    $0.input = "The car is parked in the garage."
+})
+
+regEx.match() // --> Should be true & 1
+//: Match: "The"
+
+//: $ (Dollar): "Used to check if matching character is the last character of the input string."
+
+//: Example
+regEx = try Regex({
+    $0.pattern = "(f|c|s|m)(at)$"
+    $0.input = "The fat cat sat on the mat"
+})
+
+regEx.match() // --> Should be true & 1
+//: Match: "mat."
+
+
+/*:
+ ## Shorthand Character Sets
+ 
+ Note: All descriptions are from learn-regex repository that created by Zeeshan Ahmed
+ https://github.com/zeeshanu/learn-regex
+ */
+
+
+//: \w - Matches alphanumeric characters: [a-zA-Z0-9_]
+//: \W - Matches non-alphanumeric characters: [^\w]
+//: \d - Matches digit: [0-9]
+//: \D - Matches non-digit: [^\d]
+//: \s - Matches whitespace character: [\t\n\f\r\p{Z}]
+//: \S - Matches non-whitespace character: [^\s]
+
+
+/*:
+ ## Flags
+ 
+ Note: All descriptions are from learn-regex repository that created by Zeeshan Ahmed
+ https://github.com/zeeshanu/learn-regex
+ */
+
+
+//: i (Case Sensitive): "Used to perform case-insensitive matching"
+
+//: Example
+regEx = try Regex({
+    $0.pattern = "The"
+    $0.input = "The fat cat sat on the mat."
+    $0.options = .caseInsensitive
+})
+
+regEx.match() // --> Should be true & 2
+//: Match: "The,the"
+
+//: m (Multiline): "Anchor meta character works on each line."
+
+//: Example
+regEx = try Regex({
+    $0.pattern = "The"
+    $0.input = "The fat cat sat on the mat."
+    $0.options = [.caseInsensitive, .anchorsMatchLines]
+})
+
+//: g (Global Search): "Search for a pattern throughout the input string"
+//: Note: It is global by default
+
+
+/*:
+ ### Examples
+ 
+ Let's find out some common problems
+ */
