@@ -4,7 +4,7 @@ A playground to learn regular expressions with Swift. We developers obviously kn
 
 ### Overview
 
-Before I started, checked some documents also with a few tutorials and decided to go away with [this repository][https://github.com/zeeshanu/learn-regex]. So lots of examples and descriptions are excerpted from repo.
+Before I started, checked some documents also with a few tutorials and decided to go away with [this repository](https://github.com/zeeshanu/learn-regex). So, lots of examples and descriptions are excerpted from repo.
 
 This repository contains a playground project that builds with Xcode 9 and Swift 4. 
 
