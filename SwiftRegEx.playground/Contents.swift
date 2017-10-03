@@ -5,6 +5,8 @@
  
  This playground follows the documentation on this repository: https://github.com/zeeshanu/learn-regex
  See also this cheat sheet: https://www.cheatography.com/davechild/cheat-sheets/regular-expressions/pdf_bw/
+ Enter the string that you want to use a regular expression on: https://txt2re.com/
+ Online RegEx tester: https://regex101.com/
  
  © 2017 Ogulcan Orhan - [Github](https://github.com/ogulcan)
  */
@@ -379,14 +381,58 @@ regEx = try Regex({
  Let's find out some common problems
  */
 
-//: #### Find out html (only) tags
+//: #### Matching html (only) tags (prevent close tags)
 
 regEx = try Regex({
-    $0.pattern = "<.*?>"
-    $0.input = "Hello this is <strong>John</strong> from <i>Londong, England</i>. Here is my e-mail address: <p>john@docket.com</p>."
+    $0.pattern = "<(-\\/)?\\w+>"
+    $0.input = "Hello this is <strong>John</strong> from <i>Londong, England</i>. Here is my e-mail address: <p>john@github.com</p>."
+})
+
+regEx.match() // --> Should be true & 3
+regEx.results // --> Match: "<strong>,</strong>,<i>"
+
+//: #### Match html values (not tags)
+
+regEx = try Regex({
+    $0.pattern = "<a.*?>(\\w+)</a>"
+    $0.input = """
+    Hello this is <strong>John</strong> <a>from</a> <i>Londong, England</i>. Here is my e-mail address: <p>john@docket.com</p>. Here is a link: <a href="http://example.com">Contact</a>
+    """
+})
+
+regEx.match() // --> Should be true & 3
+regEx.results // --> Match: "<strong>,</strong>,<i>"
+
+//: #### Matching decimal numbers
+
+regEx = try Regex({
+    $0.pattern = "^-?\\d+(,\\d+)*(\\.\\d+(e\\d+)?)?$"
+    $0.input = """
+    3.14529
+    -255.34
+    128
+    1.9e10
+    123,340.00
+    720p
+    """ // Skip 720p
+})
+
+regEx.match() // --> Should be true & 5
+regEx.results // --> Match: "3.14529 -255.34 128 1.9e10 123,340.00"
+
+//: #### Matching emails (only names)
+
+regEx = try Regex({
+    $0.pattern = "^([\\w\\.]*)"
+    $0.input = """
+    tom@hogwarts.com tom.riddle@hogwarts.com
+    tom.riddle+regexone@hogwarts.com
+    tom@hogwarts.eu.com
+    potter@hogwarts.com
+    harry@hogwarts.com
+    hermione+regexone@hogwarts.com
+    """
 })
 
 regEx.match() // --> Should be true & 6
-regEx.results // --> Match: "<strong>,</strong>,<i>,</i>,<p>,</p>"
-
-let REGEX_HTML_TAGS = "<.*?>"
+regEx.results // --> Match: "tom", "tom.riddle", "tom", "potter", "harry", "hermione"
